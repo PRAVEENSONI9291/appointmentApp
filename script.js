@@ -27,7 +27,6 @@ function fetchData() {
 
                 var newele4 = document.createElement('button');
 
-
                 newele4.className = 'btn btn-success btn-sm float-end edit me-1';
                 newele4.appendChild(document.createTextNode('Edit'));
 
@@ -35,19 +34,10 @@ function fetchData() {
                 newele.appendChild(newele3);
                 newele.appendChild(newele4);
 
-
                 appointments.appendChild(newele);
-
-
-
-
             }
 
             return resp;
-
-
-
-
         })
         .catch((err) => {
             console.log("error");
@@ -69,9 +59,6 @@ function addToLocalStorageAndPrint(e) {
         "phone": phone
     }
     console.log(myobj);
-
-
-
 
     var newele = document.createElement('li');
     newele.className = 'list-group-item';
@@ -114,8 +101,6 @@ function addToLocalStorageAndPrint(e) {
                             i=resp.data.length;
 
                         }
-                        
-
                     }
                     if(i==resp.data.length) {
 
@@ -124,14 +109,13 @@ function addToLocalStorageAndPrint(e) {
                         console.log("hello");
 
                     }
-
                 }
-
-
-
-
             })
     }
+
+    document.getElementById('name').value = "";
+    document.getElementById('email').value = "";
+    document.getElementById('mobile').value = "";
 
 }
 
@@ -144,10 +128,7 @@ function removeList(e) {
     if (e.target.classList.contains('delete')) {
         var list = e.target.parentElement;
 
-
         appointments.removeChild(list);
-
-
 
         axios.get("https://crudcrud.com/api/8bbff43c235f4f838e6162e5a03a8f3c/appointmentdata")
             .then((resp) => {
@@ -164,34 +145,40 @@ function removeList(e) {
                                 console.log("error");
                             })
                     }
-
                 }
-
-
             })
     }
 }
 
 function editList(e) {
 
-
     if (e.target.classList.contains('edit')) {
         var list = e.target.parentElement;
 
 
-        let myobj = JSON.parse(localStorage.getItem(e.target.previousElementSibling.id));
-        document.getElementById('name').value = myobj.name;
-        document.getElementById('email').value = myobj.email;
-        document.getElementById('mobile').value = myobj.phone;
+        axios.get("https://crudcrud.com/api/8bbff43c235f4f838e6162e5a03a8f3c/appointmentdata")
+        .then((resp)=>{
 
+            for (let i = 0; i < resp.data.length; i++) {
+                if (e.target.previousElementSibling.id == resp.data[i].email) {
+                    var ide = resp.data[i]._id;
 
-        localStorage.removeItem(e.target.previousElementSibling.id);
+                    document.getElementById('name').value = resp.data[i].name;
+                    document.getElementById('email').value = resp.data[i].email;
+                    document.getElementById('mobile').value = resp.data[i].phone;
+                    
+
+                    axios.delete(`https://crudcrud.com/api/8bbff43c235f4f838e6162e5a03a8f3c/appointmentdata/${ide}`)
+                        .then((resp) => {
+                            console.log("deleted");
+                        })
+                        .catch((err) => {
+                            console.log("error");
+                        })
+                }
+            }
+        })        
         appointments.removeChild(list);
-
-
-        // console.log("edit clicked");
-        // console.log(e.target.previousElementSibling.id);
-
 
     }
 }
