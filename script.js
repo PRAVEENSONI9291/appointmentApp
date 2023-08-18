@@ -9,7 +9,7 @@ var fetchedData;
 
 function fetchData() {
 
-    fetchedData = axios.get("https://crudcrud.com/api/f6ba46ce27d045da8c098d97bb5bfa92/appointmentData")
+    fetchedData = axios.get("https://crudcrud.com/api/8bbff43c235f4f838e6162e5a03a8f3c/appointmentdata")
         .then((resp) => {
 
 
@@ -20,7 +20,7 @@ function fetchData() {
                 var newele2 = document.createElement('span');
                 newele2.appendChild(document.createTextNode(`${resp.data[key].name} - ${resp.data[key].email} - ${resp.data[key].phone}`));
                 var newele3 = document.createElement('button');
-                newele3.id = email;
+                newele3.id = resp.data[key].email;
 
                 newele3.className = 'btn btn-danger btn-sm float-end delete me-1';
                 newele3.appendChild(document.createTextNode('X'));
@@ -95,18 +95,18 @@ function addToLocalStorageAndPrint(e) {
 
     if (email != "" && name1 != "" && phone != "") {
         console.log("before fetching api run");
-        axios.get("https://crudcrud.com/api/f6ba46ce27d045da8c098d97bb5bfa92/appointmentData")
+        axios.get("https://crudcrud.com/api/8bbff43c235f4f838e6162e5a03a8f3c/appointmentdata")
             .then((resp) => {
                 console.log("before for loop in api response");
-
+                 let i=0;
                 if (resp.data.length == 0) {
                     appointments.appendChild(newele);
-                    axios.post("https://crudcrud.com/api/f6ba46ce27d045da8c098d97bb5bfa92/appointmentData", myobj)
+                    axios.post("https://crudcrud.com/api/8bbff43c235f4f838e6162e5a03a8f3c/appointmentdata", myobj)
                     console.log("hello");
 
                 }
                 else {
-                    for (let i = 0; i < resp.data.length; i++) {
+                    for ( i = 0; i < resp.data.length; i++) {
                         console.log("inside for loop");
 
                         if (resp.data[i].email == emaildata) {
@@ -114,13 +114,14 @@ function addToLocalStorageAndPrint(e) {
                             i=resp.data.length;
 
                         }
-                        else {
+                        
 
-                            appointments.appendChild(newele);
-                            axios.post("https://crudcrud.com/api/f6ba46ce27d045da8c098d97bb5bfa92/appointmentData", myobj)
-                            console.log("hello");
+                    }
+                    if(i==resp.data.length) {
 
-                        }
+                        appointments.appendChild(newele);
+                        axios.post("https://crudcrud.com/api/8bbff43c235f4f838e6162e5a03a8f3c/appointmentdata", myobj)
+                        console.log("hello");
 
                     }
 
@@ -142,11 +143,32 @@ function removeList(e) {
 
     if (e.target.classList.contains('delete')) {
         var list = e.target.parentElement;
+
+
         appointments.removeChild(list);
 
-        localStorage.removeItem(e.target.id);
 
 
+        axios.get("https://crudcrud.com/api/8bbff43c235f4f838e6162e5a03a8f3c/appointmentdata")
+            .then((resp) => {
+                for (let i = 0; i < resp.data.length; i++) {
+                    if (e.target.id == resp.data[i].email) {
+                        var ide = resp.data[i]._id;
+                        i = resp.data.length;
+
+                        axios.delete(`https://crudcrud.com/api/8bbff43c235f4f838e6162e5a03a8f3c/appointmentdata/${ide}`)
+                            .then((resp) => {
+                                console.log("deleted");
+                            })
+                            .catch((err) => {
+                                console.log("error");
+                            })
+                    }
+
+                }
+
+
+            })
     }
 }
 
